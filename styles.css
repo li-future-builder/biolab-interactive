@@ -1268,3 +1268,79 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary);
 }
+
+/* ============================================
+   BIOLOGY TOOLTIPS — Dictionary definitions
+   ============================================ */
+
+.bio-term {
+  position: relative;
+  cursor: help;
+  border-bottom: 2px dotted currentColor;
+  transition: all 0.2s ease;
+}
+
+.bio-term:hover {
+  background: rgba(126, 87, 194, 0.15);
+  border-radius: 4px;
+  padding: 0 4px;
+  margin: 0 -4px;
+}
+
+.bio-term::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) scale(0.95);
+  background: linear-gradient(135deg, #4a148c, #7e57c2);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 400;
+  line-height: 1.5;
+  width: 260px;
+  max-width: 300px;
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+  box-shadow: 0 8px 24px rgba(74, 20, 140, 0.3);
+  pointer-events: none;
+}
+
+.bio-term::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%) scale(0);
+  border: 6px solid transparent;
+  border-top-color: #4a148c;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 100;
+}
+
+.bio-term:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) scale(1);
+}
+
+.bio-term:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) scale(1);
+}
+
+@media (max-width: 500px) {
+  .bio-term::after {
+    width: 200px;
+    font-size: 0.8rem;
+    padding: 8px 12px;
+  }
+}

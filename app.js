@@ -425,6 +425,179 @@ const quizQuestions = [
 ];
 
 // ============================================
+// BIOLOGY DICTIONARY — Tooltips for key terms
+// ============================================
+const biologyDictionary = {
+  // Ácidos nucleicos y genética
+  'ADN': 'Ácido desoxirribonucleico — la molécula que contiene las instrucciones genéticas para todos los organismos vivos.',
+  'ARN': 'Ácido ribonucleico — molécula esencial para la síntesis de proteínas y la expresión genética.',
+  'ARNm': 'ARN mensajero — transporta información genética desde el ADN a los ribosomas para la síntesis de proteínas.',
+  'ARNr': 'ARN ribosómico — un tipo de ARN que constituye el núcleo estructural de los ribosomas.',
+  'cromatina': 'Un complejo de ADN y proteínas (histonas) que forma los cromosomas dentro del núcleo.',
+  'nucléolo': 'Una estructura densa dentro del núcleo donde se produce el ARN ribosómico.',
+  'envoltura nuclear': 'La doble membrana que rodea el núcleo, controlando lo que entra y sale.',
+  'poros nucleares': 'Canales en la envoltura nuclear que permiten el intercambio de moléculas entre el núcleo y el citoplasma.',
+  
+  // Energía y metabolismo
+  'ATP': 'Adenosín trifosfato — la principal moneda energética de la célula.',
+  'respiración celular': 'El proceso mediante el cual las células descomponen la glucosa para producir ATP (energía).',
+  'crestas': 'La membrana interna plegada de las mitocondrias donde ocurre la producción de ATP.',
+  'endosimbiosis': 'La teoría de que las mitocondrias y los cloroplastos evolucionaron a partir de bacterias antiguas.',
+  
+  // Síntesis de proteínas
+  'síntesis de proteínas': 'El proceso de construir proteínas a partir de aminoácidos utilizando instrucciones del ADN.',
+  'traducción': 'Proceso donde los ribosomas convierten el ARNm en una cadena de aminoácidos (proteína).',
+  'transcripción': 'Proceso donde se copia la información del ADN a ARNm.',
+  'aminoácidos': 'Los bloques de construcción de las proteínas. Existen 20 tipos diferentes.',
+  'polipéptidos': 'Cadenas de aminoácidos que se pliegan para formar proteínas funcionales.',
+  
+  // Retículo endoplásmico y Golgi
+  'glicosilación': 'El proceso de añadir moléculas de azúcar a las proteínas o lípidos.',
+  'desintoxicación': 'El proceso de eliminar sustancias tóxicas del cuerpo o de la célula.',
+  'cisternas': 'Sacos aplanados delimitados por membrana que constituyen el aparato de Golgi.',
+  'vesículas': 'Pequeños sacos encerrados por membrana que transportan materiales dentro de la célula.',
+  'glucosa': 'Azúcar simple que las células usan como fuente principal de energía.',
+  'lípidos': 'Grasas y moléculas similares que forman membranas y almacenan energía.',
+  'esteroides': 'Tipo de lípido que incluye hormonas como el estrógeno y la testosterona.',
+  
+  // Membrana celular
+  'fosfolípidos': 'Moléculas lipídicas que forman la estructura básica de las membranas celulares.',
+  'modelo de mosaico fluido': 'El modelo que describe la membrana celular como una capa fluida de lípidos con proteínas incrustadas.',
+  'hidrofílico': 'Ama el agua — describe moléculas que se disuelven en agua.',
+  'hidrofóbico': 'Le teme al agua — describe moléculas que repelen el agua.',
+  'proteínas integrales': 'Proteínas que atraviesan toda la membrana, actuando como canales o transportadores.',
+  'proteínas periféricas': 'Proteínas unidas a un lado de la membrana, a menudo como enzimas o receptores.',
+  'bicapa lipídica': 'Doble capa de fosfolípidos que forma la base de todas las membranas celulares.',
+  'glucocálix': 'Capa de carbohidratos en la superficie externa de la membrana, importante para el reconocimiento celular.',
+  'semipermeable': 'Propiedad de la membrana que permite el paso de algunas moléculas pero no de otras.',
+  
+  // Transporte celular
+  'ósmosis': 'La difusión de agua a través de una membrana semipermeable.',
+  'difusión': 'El movimiento de moléculas desde una zona de alta a baja concentración sin necesidad de energía.',
+  'difusión simple': 'Paso directo de moléculas pequeñas y no polares a través de la membrana.',
+  'difusión facilitada': 'Transporte de moléculas a través de proteínas transportadoras sin gasto de energía.',
+  'transporte activo': 'Movimiento de moléculas en contra de su gradiente, que requiere energía ATP.',
+  'endocitosis': 'El proceso de introducir materiales en la célula envolviéndolos en una vesícula.',
+  'exocitosis': 'El proceso de expulsar materiales de la célula utilizando vesículas.',
+  'fagocitosis': 'Tipo de endocitosis donde la célula engulle partículas grandes o bacterias.',
+  'canales iónicos': 'Proteínas que forman poros en la membrana para el paso selectivo de iones.',
+  'gradiente de concentración': 'Diferencia en la concentración de una sustancia entre dos áreas.',
+  
+  // Citoesqueleto
+  'microfilamentos': 'Los filamentos más delgados del citoesqueleto hechos de proteína actina.',
+  'microtúbulos': 'Los filamentos más gruesos del citoesqueleto hechos de proteína tubulina.',
+  'filamentos intermedios': 'Filamentos de tamaño mediano del citoesqueleto que proporcionan resistencia mecánica.',
+  'cinesina': 'Una proteína motora que camina a lo largo de los microtúbulos transportando carga celular.',
+  'dineína': 'Una proteína motora que mueve la carga hacia el centro de la célula a lo largo de los microtúbulos.',
+  'actina': 'Proteína que forma los microfilamentos, esencial para el movimiento y la estructura celular.',
+  'tubulina': 'Proteína que forma los microtúbulos, clave en el transporte y la división celular.',
+  'queratina': 'Proteína que forma los filamentos intermedios en células epiteliales.',
+  'mitosis': 'Proceso de división celular que produce dos células hijas idénticas.',
+  
+  // Fotosíntesis
+  'fotosíntesis': 'El proceso mediante el cual las plantas convierten la energía luminosa en glucosa y oxígeno.',
+  'clorofila': 'El pigmento verde en los cloroplastos que captura la energía luminosa.',
+  'tilacoides': 'Discos membranosos dentro de los cloroplastos donde ocurren las reacciones lumínicas.',
+  'estroma': 'El espacio lleno de líquido dentro de los cloroplastos donde ocurre el ciclo de Calvin.',
+  'grana': 'Apilamientos de tilacoides en los cloroplastos que aumentan la eficiencia de la fotosíntesis.',
+  'ciclo de Calvin': 'Fase de la fotosíntesis donde se fija el CO₂ para producir glucosa.',
+  'reacciones lumínicas': 'Fase de la fotosíntesis que depende de la luz y ocurre en los tilacoides.',
+  
+  // Tipos celulares
+  'procariota': 'Células sin núcleo ni orgánulos delimitados por membrana (bacterias, arqueas).',
+  'eucariota': 'Células con núcleo y orgánulos delimitados por membrana (animales, plantas, hongos).',
+  'peptidoglicano': 'Un polímero que forma la pared celular de las bacterias.',
+  'celulosa': 'Un carbohidrato complejo que forma la pared celular de las plantas.',
+  'arqueas': 'Microorganismos procariotas que viven en ambientes extremos.',
+  'hongos': 'Organismos eucariotas que incluyen levaduras, mohos y setas.',
+  
+  // Estructura celular general
+  'citoplasma': 'El material gelatinoso dentro de la célula donde están suspendidos los orgánulos.',
+  'orgánulo': 'Una estructura especializada dentro de una célula que realiza una función específica.',
+  'enzima': 'Una proteína que acelera las reacciones químicas en la célula.',
+  'homeostasis': 'El mantenimiento de un ambiente interno estable en la célula o el cuerpo.',
+  'célula': 'La unidad básica de la vida, capaz de realizar todas las funciones vitales.',
+  'célula animal': 'Célula eucariota sin pared celular ni cloroplastos, con centriolos.',
+  'célula vegetal': 'Célula eucariota con pared celular de celulosa, cloroplastos y vacuola central.',
+  'vacuola central': 'Orgánulo grande en células vegetales que almacena agua y mantiene la turgencia.',
+  'pared celular': 'Capa rígida que rodea la membrana en células vegetales y bacterianas.',
+  
+  // Procesos celulares
+  'replicación': 'Proceso de copiar el ADN antes de la división celular.',
+  'regulación génica': 'Mecanismos que controlan qué genes se expresan y cuándo.',
+  'señalización celular': 'Proceso de comunicación entre células mediante señales químicas.',
+  'metabolismo': 'Conjunto de reacciones químicas que ocurren en la célula para mantener la vida.',
+  'anabolismo': 'Procesos metabólicos que construyen moléculas complejas a partir de simples.',
+  'catabolismo': 'Procesos metabólicos que descomponen moléculas para liberar energía.',
+  
+  // Moléculas y componentes
+  'histonas': 'Proteínas alrededor de las cuales se enrolla el ADN para formar cromatina.',
+  'cromosomas': 'Estructuras de ADN condensado que contienen los genes.',
+  'genes': 'Segmentos de ADN que contienen instrucciones para producir proteínas.',
+  'proteínas': 'Moléculas formadas por aminoácidos que realizan casi todas las funciones celulares.',
+  'carbohidratos': 'Moléculas que incluyen azúcares y almidones, fuente de energía y estructura.'
+};
+
+// Function to add tooltips (only first occurrence of each term)
+function addTooltips(content) {
+  let result = content;
+  const usedTerms = new Set();
+  
+  // Ordenar términos por longitud (más largos primero)
+  const sortedTerms = Object.keys(biologyDictionary).sort((a, b) => b.length - a.length);
+  
+  for (const term of sortedTerms) {
+    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const definition = biologyDictionary[term];
+    const regex = new RegExp(`(?<![<])${escapedTerm}(?![^<>]*>)`, 'gi');
+    
+    let firstReplacement = true;
+    
+    result = result.replace(regex, (match) => {
+      // Solo reemplazar si es la primera vez que aparece este término
+      if (!firstReplacement) {
+        return match;
+      }
+      
+      // Verificar si ya está dentro de un span
+      const context = result.substring(Math.max(0, result.indexOf(match) - 50), result.indexOf(match) + match.length + 50);
+      if (context.includes('bio-term') || context.includes('data-tooltip')) {
+        return match;
+      }
+      
+      firstReplacement = false;
+      
+      const isStrong = result.substring(Math.max(0, result.indexOf(match) - 8), Math.min(result.length, result.indexOf(match) + match.length + 9)).includes('<strong>');
+      
+      if (isStrong) {
+        return `<span class="bio-term" data-tooltip="${definition}"><strong>${match}</strong></span>`;
+      }
+      return `<span class="bio-term" data-tooltip="${definition}">${match}</span>`;
+    });
+  }
+  
+  return result;
+}
+
+// Cuando el usuario selecciona un orgánulo:
+function showOrganelle(organelleKey) {
+  // Primero, limpiar tooltips anteriores del contenido
+  const organelle = organelleData[organelleKey];
+  organelle.sections.forEach(section => {
+    section.content = cleanContent(section.content);
+  });
+  if (organelle.memory) {
+    organelle.memory = cleanContent(organelle.memory);
+  }
+  
+  // Procesar con nuevos tooltips (solo primera vez en TODO el orgánulo)
+  processOrganelleContent(organelleKey);
+  
+  // Ahora renderizar
+  renderOrganelleUI(organelleKey);
+}
+
+// ============================================
 // STATE
 // ============================================
 let currentMode = 'explorer';
@@ -487,7 +660,7 @@ function showInfo(key) {
   let sectionsHtml = data.sections.map(s => `
     <div class="info-section">
       <h4><span>${s.icon}</span> ${s.title}</h4>
-      <p>${s.content}</p>
+      <p>${addTooltips(s.content)}</p>
     </div>
   `).join('');
 
