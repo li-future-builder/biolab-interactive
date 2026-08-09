@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🧬 BioLab Interactivo - Aprende Biología Celular</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧬</text></svg>">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo">
+        <span class="logo-icon">🧬</span>
+        <div class="logo-text">
+          <h1>BioLab Interactivo</h1>
+          <p>Explora la célula como nunca antes</p>
+        </div>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+        <span class="progress-text" id="progress-text">0% Explorado</span>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="explorer" onclick="setMode('explorer')">
+        <span class="tab-icon">🔬</span>
+        <span class="tab-label">Explorador</span>
+      </button>
+      <button class="tab-btn" data-tab="quiz" onclick="setMode('quiz')">
+        <span class="tab-icon">🎮</span>
+        <span class="tab-label">Quiz</span>
+      </button>
+      <button class="tab-btn" data-tab="builder" onclick="setMode('builder')">
+        <span class="tab-icon">🏗️</span>
+        <span class="tab-label">Constructor</span>
+      </button>
+      <button class="tab-btn" data-tab="compare" onclick="setMode('compare')">
+        <span class="tab-icon">⚖️</span>
+        <span class="tab-label">Comparar</span>
+      </button>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- MODO EXPLORADOR -->
+      <section id="mode-explorer" class="mode-section active">
+        <div class="explorer-layout">
+          <!-- Cell Canvas -->
+          <div class="cell-canvas-container">
+            <div class="cell-type-toggle">
+              <button class="type-btn active" onclick="setCellType('animal')">🐾 Animal</button>
+              <button class="type-btn" onclick="setCellType('plant')">🌿 Vegetal</button>
+            </div>
+
+            <svg id="cell-svg" viewBox="0 0 500 500" class="cell-svg">
+              <defs>
+                <!-- Gradients for realistic organelles -->
+                <radialGradient id="nucleusGrad" cx="40%" cy="40%" r="60%">
+                  <stop offset="0%" stop-color="#7b8cde" stop-opacity="0.9"/>
+                  <stop offset="50%" stop-color="#5c6bc0" stop-opacity="0.95"/>
+                  <stop offset="100%" stop-color="#3949ab" stop-opacity="1"/>
+                </radialGradient>
+                <radialGradient id="nucleolusGrad" cx="30%" cy="30%" r="50%">
+                  <stop offset="0%" stop-color="#9fa8da"/>
+                  <stop offset="100%" stop-color="#5c6bc0"/>
+                </radialGradient>
+                <linearGradient id="mitoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ff8a80"/>
+                  <stop offset="50%" stop-color="#ef5350"/>
+                  <stop offset="100%" stop-color="#c62828"/>
+                </linearGradient>
+                <linearGradient id="mitoInnerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#ffcdd2"/>
+                  <stop offset="100%" stop-color="#e57373"/>
+                </linearGradient>
+                <radialGradient id="riboGrad" cx="30%" cy="30%" r="70%">
+                  <stop offset="0%" stop-color="#ffcc80"/>
+                  <stop offset="100%" stop-color="#f57c00"/>
+                </radialGradient>
+                <linearGradient id="rerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#ce93d8"/>
+                  <stop offset="50%" stop-color="#ab47bc"/>
+                  <stop offset="100%" stop-color="#8e24aa"/>
+                </linearGradient>
+                <linearGradient id="serGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#e1bee7"/>
+                  <stop offset="100%" stop-color="#ba68c8"/>
+                </linearGradient>
+                <linearGradient id="golgiGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#64b5f6"/>
+                  <stop offset="50%" stop-color="#42a5f5"/>
+                  <stop offset="100%" stop-color="#1976d2"/>
+                </linearGradient>
+                <linearGradient id="membraneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#ffcc80" stop-opacity="0.3"/>
+                  <stop offset="50%" stop-color="#ff9800" stop-opacity="0.2"/>
+                  <stop offset="100%" stop-color="#f57c00" stop-opacity="0.3"/>
+                </linearGradient>
+                <radialGradient id="chloroplastGrad" cx="30%" cy="30%" r="70%">
+                  <stop offset="0%" stop-color="#a5d6a7"/>
+                  <stop offset="50%" stop-color="#66bb6a"/>
+                  <stop offset="100%" stop-color="#388e3c"/>
+                </radialGradient>
+                <radialGradient id="vacuoleGrad" cx="40%" cy="30%" r="60%">
+                  <stop offset="0%" stop-color="#c8e6c9" stop-opacity="0.6"/>
+                  <stop offset="100%" stop-color="#a5d6a7" stop-opacity="0.4"/>
+                </radialGradient>
+                <radialGradient id="wallGrad" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#dcedc8" stop-opacity="0.5"/>
+                  <stop offset="100%" stop-color="#aed581" stop-opacity="0.3"/>
+                </radialGradient>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                  <feMerge>
+                    <feMergeNode in="coloredBlur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+                <filter id="shadow">
+                  <feDropShadow dx="1" dy="2" stdDeviation="2" flood-opacity="0.2"/>
+                </filter>
+              </defs>
+
+              <!-- Cell Wall (plant only) -->
+              <rect id="cell-wall" x="10" y="10" width="480" height="480" rx="30" fill="url(#wallGrad)" stroke="#8bc34a" stroke-width="8" stroke-opacity="0.6" style="display:none"/>
+
+              <!-- Membrane -->
+              <rect id="cell-membrane" x="25" y="25" width="450" height="450" rx="25" fill="url(#membraneGrad)" stroke="#ff9800" stroke-width="3" stroke-dasharray="6,3" opacity="0.7"/>
+
+              <!-- Cytoplasm background -->
+              <rect x="30" y="30" width="440" height="440" rx="22" fill="#fff8e1" opacity="0.3"/>
+
+              <!-- Central Vacuole (plant only) -->
+              <ellipse id="central-vacuole" cx="250" cy="250" rx="160" ry="180" fill="url(#vacuoleGrad)" stroke="#81c784" stroke-width="2" stroke-dasharray="4,4" style="display:none"/>
+
+              <!-- Cytoskeleton (subtle lines) -->
+              <g id="cytoskeleton" opacity="0.25" onclick="showInfo('citoesqueleto')" class="organelle-group">
+                <line x1="30" y1="30" x2="470" y2="470" stroke="#78909c" stroke-width="1.5" stroke-dasharray="3,8"/>
+                <line x1="470" y1="30" x2="30" y2="470" stroke="#78909c" stroke-width="1.5" stroke-dasharray="3,8"/>
+                <line x1="250" y1="30" x2="250" y2="470" stroke="#78909c" stroke-width="1" stroke-dasharray="2,10"/>
+                <line x1="30" y1="250" x2="470" y2="250" stroke="#78909c" stroke-width="1" stroke-dasharray="2,10"/>
+                <circle cx="100" cy="100" r="40" stroke="#78909c" fill="none" stroke-width="0.5" stroke-dasharray="2,6"/>
+                <circle cx="380" cy="350" r="50" stroke="#78909c" fill="none" stroke-width="0.5" stroke-dasharray="2,6"/>
+              </g>
+
+              <!-- Nucleus -->
+              <g id="nucleus-group" onclick="showInfo('nucleo')" class="organelle-group" filter="url(#shadow)">
+                <ellipse cx="250" cy="250" rx="70" ry="60" fill="url(#nucleusGrad)" stroke="#3949ab" stroke-width="2"/>
+                <!-- Nuclear envelope pores -->
+                <circle cx="210" cy="230" r="3" fill="#9fa8da" opacity="0.6"/>
+                <circle cx="290" cy="230" r="3" fill="#9fa8da" opacity="0.6"/>
+                <circle cx="200" cy="260" r="3" fill="#9fa8da" opacity="0.6"/>
+                <circle cx="300" cy="260" r="3" fill="#9fa8da" opacity="0.6"/>
+                <circle cx="250" cy="200" r="3" fill="#9fa8da" opacity="0.6"/>
+                <circle cx="250" cy="300" r="3" fill="#9fa8da" opacity="0.6"/>
+                <!-- Nucleolus -->
+                <ellipse cx="240" cy="245" rx="18" ry="15" fill="url(#nucleolusGrad)" opacity="0.9"/>
+                <!-- Chromatin -->
+                <path d="M 220 250 Q 235 240, 250 250 T 280 250" stroke="#7986cb" fill="none" stroke-width="1.5" opacity="0.5"/>
+                <text x="250" y="340" text-anchor="middle" class="organelle-label" fill="#3949ab">NÚCLEO</text>
+              </g>
+
+              <!-- Mitochondria -->
+              <g id="mito1" onclick="showInfo('mitocondria')" class="organelle-group" filter="url(#shadow)">
+                <ellipse cx="130" cy="140" rx="45" ry="25" fill="url(#mitoGrad)" stroke="#c62828" stroke-width="1.5" transform="rotate(-25 130 140)"/>
+                <!-- Cristae -->
+                <path d="M 100 140 Q 110 125, 120 140 T 140 140 T 160 140" stroke="#ffcdd2" fill="none" stroke-width="2" transform="rotate(-25 130 140)" opacity="0.7"/>
+                <path d="M 105 148 Q 115 133, 125 148 T 145 148" stroke="#ffcdd2" fill="none" stroke-width="1.5" transform="rotate(-25 130 140)" opacity="0.5"/>
+                <text x="130" y="185" text-anchor="middle" class="organelle-label" fill="#c62828">MITOCONDRIA</text>
+              </g>
+
+              <g id="mito2" onclick="showInfo('mitocondria')" class="organelle-group" filter="url(#shadow)">
+                <ellipse cx="370" cy="380" rx="40" ry="22" fill="url(#mitoGrad)" stroke="#c62828" stroke-width="1.5" transform="rotate(15 370 380)"/>
+                <path d="M 345 380 Q 355 365, 365 380 T 385 380 T 395 380" stroke="#ffcdd2" fill="none" stroke-width="2" transform="rotate(15 370 380)" opacity="0.7"/>
+                <text x="370" y="420" text-anchor="middle" class="organelle-label" fill="#c62828">MITOCONDRIA</text>
+              </g>
+
+              <!-- Ribosomes -->
+              <g id="ribosomes" onclick="showInfo('ribosomas')" class="organelle-group">
+                <circle cx="320" cy="120" r="7" fill="url(#riboGrad)" stroke="#e65100" stroke-width="1"/>
+                <circle cx="335" cy="115" r="5" fill="url(#riboGrad)" stroke="#e65100" stroke-width="1"/>
+                <circle cx="310" cy="130" r="6" fill="url(#riboGrad)" stroke="#e65100" stroke-width="1"/>
+                <circle cx="330" cy="135" r="4" fill="url(#riboGrad)" stroke="#e65100" stroke-width="1"/>
+                <circle cx="345" cy="128" r="5" fill="url(#riboGrad)" stroke="#e65100" stroke-width="1"/>
+                <circle cx="318" cy="142" r="4" fill="url(#riboGrad)" stroke="#e65100" stroke-width="1"/>
+                <text x="328" y="165" text-anchor="middle" class="organelle-label" fill="#e65100">RIBOSOMAS</text>
+              </g>
+
+              <!-- Rough ER -->
+              <g id="rer" onclick="showInfo('reticulo_rugoso')" class="organelle-group" filter="url(#shadow)">
+                <path d="M 80 200 Q 95 175, 110 200 T 140 200 T 170 195 T 200 205" stroke="url(#rerGrad)" fill="none" stroke-width="6" stroke-linecap="round"/>
+                <path d="M 85 218 Q 100 193, 115 218 T 145 218 T 175 213" stroke="url(#rerGrad)" fill="none" stroke-width="6" stroke-linecap="round"/>
+                <path d="M 90 235 Q 105 210, 120 235 T 150 230" stroke="url(#rerGrad)" fill="none" stroke-width="5" stroke-linecap="round"/>
+                <!-- Ribosomes on RER -->
+                <circle cx="95" cy="200" r="4" fill="#f57c00" opacity="0.8"/>
+                <circle cx="125" cy="200" r="4" fill="#f57c00" opacity="0.8"/>
+                <circle cx="155" cy="198" r="4" fill="#f57c00" opacity="0.8"/>
+                <circle cx="100" cy="218" r="4" fill="#f57c00" opacity="0.8"/>
+                <circle cx="130" cy="218" r="4" fill="#f57c00" opacity="0.8"/>
+                <text x="140" y="265" text-anchor="middle" class="organelle-label" fill="#8e24aa">RETÍCULO RUGOSO</text>
+              </g>
+
+              <!-- Smooth ER -->
+              <g id="ser" onclick="showInfo('reticulo_liso')" class="organelle-group" filter="url(#shadow)">
+                <path d="M 380 180 Q 395 160, 410 180 T 440 175 T 465 185" stroke="url(#serGrad)" fill="none" stroke-width="5" stroke-linecap="round"/>
+                <path d="M 385 195 Q 400 175, 415 195 T 445 190 T 470 200" stroke="url(#serGrad)" fill="none" stroke-width="5" stroke-linecap="round"/>
+                <text x="425" y="225" text-anchor="middle" class="organelle-label" fill="#8e24aa">RETÍCULO LISO</text>
+              </g>
+
+              <!-- Golgi Apparatus -->
+              <g id="golgi" onclick="showInfo('golgi')" class="organelle-group" filter="url(#shadow)">
+                <path d="M 340 280 Q 360 272, 390 280 T 430 278" stroke="url(#golgiGrad)" fill="none" stroke-width="8" stroke-linecap="round"/>
+                <path d="M 335 295 Q 360 287, 395 295 T 440 292" stroke="url(#golgiGrad)" fill="none" stroke-width="8" stroke-linecap="round"/>
+                <path d="M 330 310 Q 360 302, 400 310 T 450 307" stroke="url(#golgiGrad)" fill="none" stroke-width="8" stroke-linecap="round"/>
+                <path d="M 325 325 Q 360 317, 405 325 T 460 322" stroke="url(#golgiGrad)" fill="none" stroke-width="7" stroke-linecap="round"/>
+                <!-- Vesicles -->
+                <circle cx="320" cy="275" r="6" fill="#90caf9" opacity="0.8"/>
+                <circle cx="315" cy="290" r="5" fill="#90caf9" opacity="0.8"/>
+                <circle cx="465" cy="285" r="5" fill="#90caf9" opacity="0.8"/>
+                <circle cx="470" cy="300" r="6" fill="#90caf9" opacity="0.8"/>
+                <text x="390" y="355" text-anchor="middle" class="organelle-label" fill="#1565c0">APARATO DE GOLGI</text>
+              </g>
+
+              <!-- Chloroplasts (plant only) -->
+              <g id="chloroplast1" onclick="showInfo('cloroplasto')" class="organelle-group" style="display:none" filter="url(#shadow)">
+                <ellipse cx="100" cy="350" rx="35" ry="25" fill="url(#chloroplastGrad)" stroke="#2e7d32" stroke-width="1.5" transform="rotate(20 100 350)"/>
+                <!-- Thylakoids -->
+                <ellipse cx="95" cy="345" rx="12" ry="8" fill="#a5d6a7" stroke="#388e3c" stroke-width="0.5" transform="rotate(20 95 345)"/>
+                <ellipse cx="105" cy="355" rx="10" ry="7" fill="#a5d6a7" stroke="#388e3c" stroke-width="0.5" transform="rotate(20 105 355)"/>
+                <text x="100" y="395" text-anchor="middle" class="organelle-label" fill="#2e7d32">CLOROPLASTO</text>
+              </g>
+
+              <g id="chloroplast2" onclick="showInfo('cloroplasto')" class="organelle-group" style="display:none" filter="url(#shadow)">
+                <ellipse cx="400" cy="100" rx="32" ry="22" fill="url(#chloroplastGrad)" stroke="#2e7d32" stroke-width="1.5" transform="rotate(-15 400 100)"/>
+                <ellipse cx="395" cy="95" rx="10" ry="7" fill="#a5d6a7" stroke="#388e3c" stroke-width="0.5" transform="rotate(-15 395 95)"/>
+                <text x="400" y="140" text-anchor="middle" class="organelle-label" fill="#2e7d32">CLOROPLASTO</text>
+              </g>
+
+              <!-- Transport vesicles (animated) -->
+              <g id="transport-vesicles" onclick="showInfo('transporte')" class="organelle-group">
+                <circle cx="200" cy="320" r="10" fill="#66bb6a" opacity="0.85" filter="url(#shadow)">
+                  <animate attributeName="cy" values="320;340;320" dur="4s" repeatCount="indefinite"/>
+                  <animate attributeName="cx" values="200;220;200" dur="4s" repeatCount="indefinite"/>
+                  <animate attributeName="opacity" values="0.85;0.5;0.85" dur="4s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="280" cy="180" r="8" fill="#66bb6a" opacity="0.85" filter="url(#shadow)">
+                  <animate attributeName="cy" values="180;160;180" dur="3s" repeatCount="indefinite"/>
+                  <animate attributeName="cx" values="280;260;280" dur="3s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="150" cy="280" r="7" fill="#66bb6a" opacity="0.7" filter="url(#shadow)">
+                  <animate attributeName="cy" values="280;300;280" dur="3.5s" repeatCount="indefinite"/>
+                </circle>
+                <text x="215" y="370" text-anchor="middle" class="organelle-label" fill="#2e7d32">TRANSPORTE</text>
+              </g>
+
+              <!-- Membrane proteins -->
+              <g id="membrane-proteins" onclick="showInfo('membrana')" class="organelle-group">
+                <rect x="28" y="180" width="8" height="20" rx="4" fill="#ff9800" opacity="0.7"/>
+                <rect x="28" y="240" width="8" height="25" rx="4" fill="#ff9800" opacity="0.7"/>
+                <rect x="28" y="300" width="8" height="18" rx="4" fill="#ff9800" opacity="0.7"/>
+                <rect x="464" y="150" width="8" height="22" rx="4" fill="#ff9800" opacity="0.7"/>
+                <rect x="464" y="210" width="8" height="20" rx="4" fill="#ff9800" opacity="0.7"/>
+                <rect x="464" y="320" width="8" height="24" rx="4" fill="#ff9800" opacity="0.7"/>
+                <text x="250" y="495" text-anchor="middle" class="organelle-label" fill="#e65100">MEMBRANA PLASMÁTICA</text>
+              </g>
+            </svg>
+
+            <div class="canvas-hint">
+              <span class="hint-icon">👆</span>
+              <span class="hint-text">Toca cualquier orgánulo para explorar</span>
+            </div>
+          </div>
+
+          <!-- Info Panel -->
+          <div class="info-panel" id="info-panel">
+            <div class="info-welcome">
+              <div class="welcome-icon">🧫</div>
+              <h3 class="welcome-title">¡Bienvenido al BioLab!</h3>
+              <p class="welcome-desc">Selecciona un orgánulo en la célula para descubrir sus secretos:</p>
+              <ul class="feature-list">
+                <li><span class="feature-icon">🧪</span> Función principal</li>
+                <li><span class="feature-icon">🔍</span> Estructura interna</li>
+                <li><span class="feature-icon">⚡</span> Datos curiosos</li>
+                <li><span class="feature-icon">🎴</span> Tarjeta de memoria</li>
+              </ul>
+              <div class="cell-badge">
+                <span class="badge-icon">🐾</span>
+                <span class="badge-text">Célula Eucariota Animal</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODO QUIZ -->
+      <section id="mode-quiz" class="mode-section">
+        <div class="quiz-container">
+          <div class="quiz-header">
+            <div class="quiz-score">
+              <span class="score-label">Puntuación</span>
+              <span class="score-value" id="quiz-score">0</span>
+            </div>
+            <div class="quiz-streak">
+              <span class="streak-label">Racha</span>
+              <span class="streak-value" id="quiz-streak">🔥 0</span>
+            </div>
+            <div class="quiz-progress">
+              <span class="progress-label">Pregunta</span>
+              <span class="progress-value" id="quiz-progress">1 / 20</span>
+            </div>
+          </div>
+
+          <div class="quiz-card" id="quiz-card">
+            <div class="quiz-question-icon" id="quiz-icon">🎯</div>
+            <h3 class="quiz-question" id="quiz-question">Cargando pregunta...</h3>
+            <div class="quiz-options" id="quiz-options"></div>
+            <div class="quiz-feedback" id="quiz-feedback"></div>
+          </div>
+
+          <div class="quiz-controls">
+            <button class="quiz-btn secondary" onclick="skipQuestion()">⏭️ Saltar</button>
+            <button class="quiz-btn primary" id="next-btn" onclick="nextQuestion()" disabled>Siguiente →</button>
+          </div>
+
+          <div class="quiz-categories">
+            <span class="cat-label">Filtrar por tema:</span>
+            <button class="cat-btn active" onclick="filterQuiz('all')">Todos</button>
+            <button class="cat-btn" onclick="filterQuiz('organelles')">Orgánulos</button>
+            <button class="cat-btn" onclick="filterQuiz('membrane')">Membrana</button>
+            <button class="cat-btn" onclick="filterQuiz('transport')">Transporte</button>
+            <button class="cat-btn" onclick="filterQuiz('cytoskeleton')">Citoesqueleto</button>
+            <button class="cat-btn" onclick="filterQuiz('types')">Tipos de célula</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODO CONSTRUCTOR -->
+      <section id="mode-builder" class="mode-section">
+        <div class="builder-container">
+          <div class="builder-sidebar">
+            <h3 class="builder-title">🧰 Caja de Orgánulos</h3>
+            <p class="builder-subtitle">Arrastra o haz clic para añadir a tu célula</p>
+
+            <div class="organelle-palette">
+              <div class="palette-item" data-part="nucleo" onclick="addToCell('nucleo')">
+                <div class="palette-preview nucleus-preview"></div>
+                <span class="palette-name">Núcleo</span>
+                <span class="palette-desc">Centro de control</span>
+              </div>
+              <div class="palette-item" data-part="mitocondria" onclick="addToCell('mitocondria')">
+                <div class="palette-preview mito-preview"></div>
+                <span class="palette-name">Mitocondria</span>
+                <span class="palette-desc">Central energética</span>
+              </div>
+              <div class="palette-item" data-part="ribosomas" onclick="addToCell('ribosomas')">
+                <div class="palette-preview ribo-preview"></div>
+                <span class="palette-name">Ribosomas</span>
+                <span class="palette-desc">Fábrica de proteínas</span>
+              </div>
+              <div class="palette-item" data-part="rer" onclick="addToCell('rer')">
+                <div class="palette-preview rer-preview"></div>
+                <span class="palette-name">Ret. Rugoso</span>
+                <span class="palette-desc">Síntesis proteica</span>
+              </div>
+              <div class="palette-item" data-part="ser" onclick="addToCell('ser')">
+                <div class="palette-preview ser-preview"></div>
+                <span class="palette-name">Ret. Liso</span>
+                <span class="palette-desc">Lípidos & detox</span>
+              </div>
+              <div class="palette-item" data-part="golgi" onclick="addToCell('golgi')">
+                <div class="palette-preview golgi-preview"></div>
+                <span class="palette-name">Aparato Golgi</span>
+                <span class="palette-desc">Estación de empaque</span>
+              </div>
+              <div class="palette-item" data-part="membrana" onclick="addToCell('membrana')">
+                <div class="palette-preview membrane-preview"></div>
+                <span class="palette-name">Membrana</span>
+                <span class="palette-desc">Barrera selectiva</span>
+              </div>
+              <div class="palette-item" data-part="citoesqueleto" onclick="addToCell('citoesqueleto')">
+                <div class="palette-preview cytoskeleton-preview"></div>
+                <span class="palette-name">Citoesqueleto</span>
+                <span class="palette-desc">Andamio celular</span>
+              </div>
+            </div>
+
+            <div class="builder-actions">
+              <button class="builder-btn reset" onclick="resetCell()">🔄 Reconstruir</button>
+              <button class="builder-btn hint" onclick="showBuilderHint()">💡 Pista</button>
+            </div>
+          </div>
+
+          <div class="builder-canvas-wrapper">
+            <div class="builder-canvas" id="builder-canvas">
+              <div class="canvas-placeholder" id="canvas-placeholder">
+                <span class="placeholder-icon">🧫</span>
+                <span class="placeholder-text">Tu célula aquí</span>
+                <span class="placeholder-sub">Haz clic en los orgánulos de la izquierda</span>
+              </div>
+            </div>
+            <div class="builder-status" id="builder-status"></div>
+            <div class="builder-completion" id="builder-completion"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MODO COMPARAR -->
+      <section id="mode-compare" class="mode-section">
+        <div class="compare-container">
+          <h2 class="compare-title">⚖️ Procariota vs. Eucariota</h2>
+          <div class="compare-grid">
+            <div class="compare-card procariota">
+              <div class="compare-header">
+                <span class="compare-icon">🦠</span>
+                <h3>Célula Procariota</h3>
+                <span class="compare-examples">Bacterias, Arqueas</span>
+              </div>
+              <div class="compare-body">
+                <div class="compare-feature no">
+                  <span class="feature-check">❌</span>
+                  <span class="feature-text">Sin núcleo definido (ADN libre en citoplasma)</span>
+                </div>
+                <div class="compare-feature no">
+                  <span class="feature-check">❌</span>
+                  <span class="feature-text">Sin membrana nuclear</span>
+                </div>
+                <div class="compare-feature no">
+                  <span class="feature-check">❌</span>
+                  <span class="feature-text">Sin mitocondria</span>
+                </div>
+                <div class="compare-feature no">
+                  <span class="feature-check">❌</span>
+                  <span class="feature-text">Sin retículo endoplásmico</span>
+                </div>
+                <div class="compare-feature no">
+                  <span class="feature-check">❌</span>
+                  <span class="feature-text">Sin aparato de Golgi</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">Ribosomas 70S (más pequeños)</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">Pared celular de peptidoglicano</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">Citoplasma con citoesqueleto simple</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">Membrana plasmática (mosaico fluido)</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">ADN circular (cromosoma único)</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">Tamaño: 1-10 µm</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="compare-card eucariota">
+              <div class="compare-header">
+                <span class="compare-icon">🧫</span>
+                <h3>Célula Eucariota</h3>
+                <span class="compare-examples">Animales, Plantas, Hongos, Protistas</span>
+              </div>
+              <div class="compare-body">
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">Núcleo definido con envoltura nuclear</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">Membrana nuclear con poros</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">Mitocondria (respiración celular)</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">Retículo endoplásmico (rugoso y liso)</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">Aparato de Golgi</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">Ribosomas 80S (más grandes)</span>
+                </div>
+                <div class="compare-feature partial">
+                  <span class="feature-check">⚠️</span>
+                  <span class="feature-text">Pared celular solo en plantas/hongos</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">Citoesqueleto complejo (3 tipos)</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">Membrana plasmática (mosaico fluido)</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">ADN lineal (múltiples cromosomas)</span>
+                </div>
+                <div class="compare-feature yes">
+                  <span class="feature-check">✅</span>
+                  <span class="feature-text">Tamaño: 10-100 µm</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="compare-visual">
+            <h4>🔬 Visualización Comparativa</h4>
+            <div class="visual-row">
+              <div class="visual-cell procariota-visual">
+                <svg viewBox="0 0 200 200" width="180">
+                  <rect x="10" y="10" width="180" height="180" rx="10" fill="#e8f5e9" stroke="#4caf50" stroke-width="3"/>
+                  <circle cx="100" cy="100" r="25" fill="none" stroke="#2e7d32" stroke-width="2" stroke-dasharray="4,2"/>
+                  <text x="100" y="105" text-anchor="middle" fill="#2e7d32" font-size="10" font-weight="bold">ADN</text>
+                  <circle cx="60" cy="60" r="5" fill="#ff9800"/>
+                  <circle cx="140" cy="70" r="5" fill="#ff9800"/>
+                  <circle cx="70" cy="140" r="5" fill="#ff9800"/>
+                  <circle cx="130" cy="130" r="5" fill="#ff9800"/>
+                  <text x="100" y="195" text-anchor="middle" fill="#388e3c" font-size="11" font-weight="bold">Procariota</text>
+                </svg>
+                <span class="visual-size">~2 µm</span>
+              </div>
+              <div class="visual-arrow">➡️</div>
+              <div class="visual-cell eucariota-visual">
+                <svg viewBox="0 0 200 200" width="180">
+                  <rect x="10" y="10" width="180" height="180" rx="20" fill="#fff3e0" stroke="#ff9800" stroke-width="3" stroke-dasharray="6,3"/>
+                  <circle cx="100" cy="100" r="35" fill="#5c6bc0" opacity="0.8"/>
+                  <circle cx="95" cy="95" r="10" fill="#7986cb"/>
+                  <ellipse cx="50" cy="50" rx="20" ry="12" fill="#ef5350" transform="rotate(-20 50 50)"/>
+                  <path d="M 140 40 Q 150 30, 160 40 T 180 38" stroke="#ab47bc" fill="none" stroke-width="4"/>
+                  <path d="M 145 55 Q 155 45, 165 55 T 185 52" stroke="#ab47bc" fill="none" stroke-width="4"/>
+                  <path d="M 130 140 Q 140 135, 160 140 T 190 138" stroke="#42a5f5" fill="none" stroke-width="5"/>
+                  <path d="M 125 155 Q 140 150, 165 155 T 195 152" stroke="#42a5f5" fill="none" stroke-width="5"/>
+                  <circle cx="70" cy="150" r="4" fill="#f57c00"/>
+                  <circle cx="80" cy="145" r="3" fill="#f57c00"/>
+                  <circle cx="75" cy="158" r="3" fill="#f57c00"/>
+                  <text x="100" y="195" text-anchor="middle" fill="#e65100" font-size="11" font-weight="bold">Eucariota</text>
+                </svg>
+                <span class="visual-size">~50 µm</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>🧬 BioLab Interactivo v2.0 — Aprende biología celular de forma divertida</p>
+      <p class="footer-links">
+        <a href="https://github.com/tuusuario/biolab-interactivo" target="_blank">📂 GitHub</a>
+        <span class="sep">•</span>
+        <a href="#" onclick="showAbout()">ℹ️ Acerca de</a>
+      </p>
+    </footer>
+  </div>
+
+  <!-- About Modal -->
+  <div class="modal" id="about-modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeAbout()">✕</button>
+      <h2>🧬 Acerca de BioLab Interactivo</h2>
+      <p>BioLab Interactivo es una aplicación educativa open-source diseñada para hacer el aprendizaje de la biología celular accesible, visual y divertido.</p>
+      <h3>📚 Temas cubiertos:</h3>
+      <ul>
+        <li>Células procariotas y eucariotas</li>
+        <li>Orgánulos: núcleo, mitocondria, ribosomas, retículo endoplásmico, aparato de Golgi</li>
+        <li>Membrana plasmática y transporte celular</li>
+        <li>Citoesqueleto</li>
+      </ul>
+      <h3>🛠️ Tecnologías:</h3>
+      <p>HTML5, CSS3, JavaScript vanilla, SVG interactivo</p>
+      <p class="modal-footer">Hecho con 💜 para estudiantes de biología</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
