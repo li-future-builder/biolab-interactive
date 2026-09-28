@@ -598,14 +598,152 @@ function showOrganelle(organelleKey) {
 }
 
 // ============================================
+// PERSISTENT PRODUCT STATE
+// ============================================
+const STORAGE_KEY = 'biolab-interactive-state-v3';
+const ANALYTICS_CODE = window.BIOLAB_ANALYTICS_CODE || '';
+
+let productState = {
+  xp: 0,
+  streak: 0,
+  lastActiveDate: null,
+  dailyCompletedDate: null,
+  quizzesCompleted: 0,
+  quizCorrect: 0,
+  explored: [],
+  builderCompleted: false
+};
+
+function loadProductState() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if (saved && typeof saved === 'object') productState = { ...productState, ...saved };
+  } catch (error) {
+    console.warn('BioLab: no se pudo cargar el progreso local.', error);
+  }
+}
+
+function saveProductState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(productState)); } catch (_) {}
+}
+
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function registerActivity() {
+  const today = todayKey();
+  if (productState.lastActiveDate !== today) {
+    const previous = productState.lastActiveDate;
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayKey = yesterday.toISOString().slice(0, 10);
+    productState.streak = previous === yesterdayKey ? productState.streak + 1 : 1;
+    productState.lastActiveDate = today;
+    saveProductState();
+  }
+}
+
+function awardXP(amount, reason) {
+  productState.xp += amount;
+  registerActivity();
+  saveProductState();
+  updateDashboard();
+  trackEvent('xp_earned', { amount, reason });
+}
+
+function trackEvent(name, data = {}) {
+  // If GoatCounter is configured, it gives you aggregate visitor/event analytics
+  // without requiring user accounts in BioLab.
+  if (window.goatcounter && typeof window.goatcounter.count === 'function') {
+    window.goatcounter.count({ path: `event/${name}`, title: name });
+  }
+  // Keep a tiny local event counter as a fallback for debugging.
+  try {
+    const key = 'biolab-event-counts';
+    const events = JSON.parse(localStorage.getItem(key) || '{}');
+    events[name] = (events[name] || 0) + 1;
+    localStorage.setItem(key, JSON.stringify(events));
+  } catch (_) {}
+}
+
+function loadAnalytics() {
+  if (!ANALYTICS_CODE || ANALYTICS_CODE === 'YOUR_GOATCOUNTER_CODE') return;
+  if (document.querySelector('script[data-biolab-analytics]')) return;
+  const script = document.createElement('script');
+  script.dataset.biolabAnalytics = 'true';
+  script.src = 'https://gc.zgo.at/count.js';
+  script.async = true;
+  script.dataset.goatcounter = `https://${ANALYTICS_CODE}.goatcounter.com/count`;
+  document.head.appendChild(script);
+}
+
+function updateDashboard() {
+  const statXP = document.getElementById('stat-xp');
+  const statStreak = document.getElementById('stat-streak');
+  const statQuizzes = document.getElementById('stat-quizzes');
+  const statExplored = document.getElementById('stat-explored');
+  if (statXP) statXP.textContent = productState.xp;
+  if (statStreak) statStreak.textContent = productState.streak;
+  if (statQuizzes) statQuizzes.textContent = productState.quizzesCompleted;
+  if (statExplored) statExplored.textContent = productState.explored.length;
+
+  const dailyTitle = document.getElementById('daily-title');
+  const dailySubtitle = document.getElementById('daily-subtitle');
+  const dailyBtn = document.querySelector('.daily-btn');
+  if (dailyTitle && dailySubtitle && dailyBtn) {
+    const completed = productState.dailyCompletedDate === todayKey();
+    const dailyQuestion = getDailyQuestion();
+    dailyTitle.textContent = completed ? '¡Reto diario completado! ✨' : dailyQuestion.question;
+    dailySubtitle.textContent = completed
+      ? 'Vuelve mañana para desbloquear una nueva misión.'
+      : 'Una pregunta rápida. Completa el reto y gana XP.';
+    dailyBtn.textContent = completed ? 'Repasar →' : 'Comenzar →';
+    dailyBtn.classList.toggle('daily-complete', completed);
+  }
+}
+
+function getDailyQuestion() {
+  const date = todayKey();
+  const hash = [...date].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return quizQuestions[hash % quizQuestions.length];
+}
+
+function startDailyChallenge() {
+  const q = getDailyQuestion();
+  const index = quizQuestions.findIndex(item => item.id === q.id);
+  quizState.shuffledQuestions = [q];
+  quizState.filteredQuestions = [q];
+  quizState.currentIndex = 0;
+  quizState.score = 0;
+  quizState.streak = 0;
+  quizState.answered = false;
+  setMode('quiz');
+  trackEvent('daily_challenge_started', { question: q.id });
+}
+
+function completeDailyChallenge() {
+  const today = todayKey();
+  if (productState.dailyCompletedDate !== today) {
+    productState.dailyCompletedDate = today;
+    awardXP(25, 'daily_challenge');
+    updateDashboard();
+    trackEvent('daily_challenge_completed');
+  }
+}
+
+loadProductState();
+
+// ============================================
 // STATE
 // ============================================
 let currentMode = 'explorer';
-let exploredOrganelles = new Set();
+let exploredOrganelles = new Set(productState.explored || []);
 let quizState = {
   currentIndex: 0,
   score: 0,
   streak: 0,
+  correct: 0,
   answered: false,
   filter: 'all',
   filteredQuestions: [],
@@ -618,8 +756,12 @@ let cellType = 'animal';
 // INIT
 // ============================================
 document.addEventListener('DOMContentLoaded', () => {
+  loadAnalytics();
+  registerActivity();
   initQuiz();
   updateProgress();
+  updateDashboard();
+  trackEvent('app_open');
 });
 
 // ============================================
@@ -651,7 +793,10 @@ function showInfo(key) {
   const data = organelleData[key];
   if (!data) return;
 
+  const wasNew = !exploredOrganelles.has(key);
   exploredOrganelles.add(key);
+  productState.explored = [...exploredOrganelles];
+  if (wasNew) awardXP(5, 'explore_organelle'); else saveProductState();
   updateProgress();
 
   const panel = document.getElementById('info-panel');
@@ -723,6 +868,7 @@ function initQuiz() {
   quizState.currentIndex = 0;
   quizState.score = 0;
   quizState.streak = 0;
+  quizState.correct = 0;
 }
 
 function filterQuiz(category) {
@@ -751,6 +897,7 @@ function filterQuiz(category) {
   quizState.currentIndex = 0;
   quizState.score = 0;
   quizState.streak = 0;
+  quizState.correct = 0;
   quizState.answered = false;
 
   renderQuizQuestion();
@@ -812,6 +959,7 @@ function selectAnswer(index) {
   });
 
   if (index === q.correct) {
+    quizState.correct++;
     quizState.score += 10 + (quizState.streak * 2);
     quizState.streak++;
     feedback.innerHTML = `✅ ¡Correcto! ${q.explanation}`;
@@ -842,8 +990,15 @@ function skipQuestion() {
 
 function showQuizResults() {
   const total = quizState.filteredQuestions.length;
-  const maxScore = total * 10;
-  const percent = Math.round((quizState.score / maxScore) * 100);
+  const percent = total ? Math.round((quizState.correct / total) * 100) : 0;
+  productState.quizzesCompleted++;
+  productState.quizCorrect += quizState.correct;
+  awardXP(Math.max(10, quizState.correct * 5), 'quiz_completed');
+  if (quizState.filteredQuestions.length === 1 && quizState.filteredQuestions[0].id === getDailyQuestion().id) {
+    completeDailyChallenge();
+  }
+  saveProductState();
+  trackEvent('quiz_completed', { correct: quizState.correct, total, percent });
 
   let icon, title, message, badges = [];
 
@@ -1148,6 +1303,11 @@ function addToCell(part) {
 
   if (builderParts.length === 8) {
     canvas.classList.add('complete');
+    if (!productState.builderCompleted) {
+      productState.builderCompleted = true;
+      awardXP(50, 'builder_completed');
+      trackEvent('builder_completed');
+    }
     document.getElementById('builder-completion').innerHTML = `
       <div class="completion-badge">🏆 ¡Célula completa! Eres una científica estrella 🌟</div>
     `;
@@ -1203,3 +1363,5 @@ document.addEventListener('click', (e) => {
     modal.classList.remove('active');
   }
 });
+
+window.addEventListener('beforeunload', saveProductState);

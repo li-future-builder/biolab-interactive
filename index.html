@@ -6,7 +6,9 @@
   <title>🧬 BioLab Interactivo - Aprende Biología Celular</title>
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧬</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧬</text></svg>'>
+  <!-- Optional privacy-friendly analytics: set your GoatCounter code in window.BIOLAB_ANALYTICS_CODE -->
+  <script>window.BIOLAB_ANALYTICS_CODE = "";</script>
 </head>
 <body>
   <div class="app-container">
@@ -44,6 +46,24 @@
         <span class="tab-label">Comparar</span>
       </button>
     </nav>
+
+    <!-- PRODUCT DASHBOARD -->
+    <section class="lab-dashboard" aria-label="Tu progreso en BioLab">
+      <div class="daily-card">
+        <div class="daily-copy">
+          <span class="eyebrow">🧬 RETO DE HOY</span>
+          <h2 id="daily-title">Cargando desafío...</h2>
+          <p id="daily-subtitle">Una pequeña misión para mantener tu cerebro en modo laboratorio.</p>
+        </div>
+        <button class="daily-btn" onclick="startDailyChallenge()">Comenzar →</button>
+      </div>
+      <div class="stats-card">
+        <div class="mini-stat"><span>⚡</span><strong id="stat-xp">0</strong><small>XP</small></div>
+        <div class="mini-stat"><span>🔥</span><strong id="stat-streak">0</strong><small>Racha</small></div>
+        <div class="mini-stat"><span>🏆</span><strong id="stat-quizzes">0</strong><small>Quizzes</small></div>
+        <div class="mini-stat"><span>🔬</span><strong id="stat-explored">0</strong><small>Explorados</small></div>
+      </div>
+    </section>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -591,6 +611,8 @@
       </ul>
       <h3>🛠️ Tecnologías:</h3>
       <p>HTML5, CSS3, JavaScript vanilla, SVG interactivo</p>
+      <h3>📊 Privacidad y métricas</h3>
+      <p>BioLab puede usar analítica agregada y respetuosa con la privacidad para conocer cuántas personas usan la aplicación y qué funciones son más útiles. No necesitas crear una cuenta para aprender.</p>
       <p class="modal-footer">Hecho con 💜 para estudiantes de biología</p>
     </div>
   </div>

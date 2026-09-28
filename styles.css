@@ -1344,3 +1344,95 @@ body {
     padding: 8px 12px;
   }
 }
+
+
+/* ============================================
+   PRODUCT DASHBOARD — daily loop + progress
+   ============================================ */
+.lab-dashboard {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.daily-card,
+.stats-card {
+  background: rgba(255,255,255,.94);
+  border: 1px solid rgba(126,87,194,.10);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-md);
+}
+.daily-card {
+  padding: 22px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(171,71,188,.13), transparent 38%),
+    linear-gradient(135deg,#fff 0%,#fbf7ff 100%);
+}
+.eyebrow {
+  display: inline-block;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+  color: var(--primary);
+  margin-bottom: 5px;
+}
+.daily-copy h2 {
+  font-size: 1.15rem;
+  margin: 0 0 4px;
+  color: var(--text-primary);
+}
+.daily-copy p {
+  font-size: .88rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.daily-btn {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font: inherit;
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg,var(--primary),var(--primary-dark));
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(126,87,194,.25);
+  transition: var(--transition);
+}
+.daily-btn:hover { transform: translateY(-2px); }
+.stats-card {
+  padding: 14px;
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  align-items: center;
+}
+.mini-stat {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border-right: 1px solid #eee;
+}
+.mini-stat:last-child { border-right: 0; }
+.mini-stat span { font-size: 1rem; }
+.mini-stat strong { font-size: 1.15rem; color: var(--primary-dark); line-height: 1.1; }
+.mini-stat small { font-size: .68rem; color: var(--text-muted); font-weight: 700; }
+
+.daily-complete {
+  animation: dailyPulse .45s ease;
+}
+@keyframes dailyPulse {
+  0% { transform: scale(.98); }
+  60% { transform: scale(1.01); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 760px) {
+  .lab-dashboard { grid-template-columns: 1fr; }
+  .daily-card { align-items: flex-start; flex-direction: column; }
+  .daily-btn { width: 100%; }
+}
