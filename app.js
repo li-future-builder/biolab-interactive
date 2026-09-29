@@ -611,7 +611,9 @@ let productState = {
   quizzesCompleted: 0,
   quizCorrect: 0,
   explored: [],
-  builderCompleted: false
+  builderCompleted: false,
+  missionsCompleted: [],
+  missionAttempts: {}
 };
 
 function loadProductState() {
@@ -628,7 +630,11 @@ function saveProductState() {
 }
 
 function todayKey() {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
 }
 
 function registerActivity() {
@@ -761,8 +767,123 @@ document.addEventListener('DOMContentLoaded', () => {
   initQuiz();
   updateProgress();
   updateDashboard();
+  renderMissions();
   trackEvent('app_open');
 });
+
+// ============================================
+// SCIENTIFIC MISSIONS
+// ============================================
+const missions = [
+  {
+    id: 'energy-crisis', icon: '⚡', difficulty: 'Nivel 1', xp: 40,
+    title: 'Crisis energética',
+    summary: 'Una célula deja de producir suficiente ATP. Investiga qué estructura está fallando.',
+    scenario: 'Tus sensores detectan una caída brusca de ATP. La síntesis de proteínas y el transporte activo comienzan a disminuir. ¿Qué estructura investigarías primero?',
+    choices: [
+      { text: '🧠 Núcleo', correct: false, feedback: 'El núcleo contiene el ADN y regula la expresión génica, pero no es el sitio principal de producción de ATP.' },
+      { text: '⚡ Mitocondria', correct: true, feedback: 'Correcto. La mitocondria genera gran parte del ATP mediante la respiración celular.' },
+      { text: '📦 Aparato de Golgi', correct: false, feedback: 'El Golgi modifica y distribuye moléculas; no es el principal productor de ATP.' }
+    ]
+  },
+  {
+    id: 'protein-factory', icon: '🧬', difficulty: 'Nivel 2', xp: 50,
+    title: 'Fábrica de proteínas',
+    summary: 'Una célula secretora produce muchas proteínas, pero los productos no llegan a su destino.',
+    scenario: 'Una célula pancreática fabrica una proteína para secretarla fuera de la célula. La proteína se sintetiza, pero el envío falla. ¿Qué ruta deberías revisar?',
+    choices: [
+      { text: '🧬 Ribosoma → RER → Golgi → vesícula', correct: true, feedback: 'Exacto. Los ribosomas sintetizan la proteína, el RER participa en su procesamiento inicial y el Golgi la modifica y clasifica para su destino.' },
+      { text: '⚡ Mitocondria → núcleo → membrana', correct: false, feedback: 'La mitocondria no es la ruta de empaquetado y secreción de proteínas.' },
+      { text: '🌿 Cloroplasto → vacuola → Golgi', correct: false, feedback: 'Esa secuencia no corresponde a la vía secretora de una célula animal.' }
+    ]
+  },
+  {
+    id: 'membrane-defense', icon: '🛡️', difficulty: 'Nivel 3', xp: 60,
+    title: 'Defensa de la membrana',
+    summary: 'Una sustancia atraviesa la membrana. Determina qué mecanismo explica mejor su movimiento.',
+    scenario: 'Hay mucha más concentración de una molécula pequeña y no polar fuera de la célula que dentro. No se observa gasto de ATP. ¿Cómo esperarías que se mueva?',
+    choices: [
+      { text: '🚪 Difusión simple hacia el interior', correct: true, feedback: 'Correcto. Una molécula pequeña y no polar puede atravesar la bicapa lipídica siguiendo su gradiente de concentración sin ATP.' },
+      { text: '🔋 Transporte activo hacia el interior', correct: false, feedback: 'El transporte activo requiere energía y normalmente se utiliza para mover sustancias contra su gradiente.' },
+      { text: '📦 Exocitosis', correct: false, feedback: 'La exocitosis utiliza vesículas para sacar materiales de la célula; no describe este caso.' }
+    ]
+  }
+];
+
+let activeMission = null;
+let activeMissionAnswered = false;
+
+function renderMissions() {
+  const grid = document.getElementById('mission-grid');
+  const pill = document.getElementById('mission-progress-pill');
+  if (!grid) return;
+  const completed = productState.missionsCompleted || [];
+  if (pill) pill.textContent = `${completed.length}/${missions.length} completadas`;
+  grid.innerHTML = missions.map(m => {
+    const done = completed.includes(m.id);
+    return `<article class="mission-card ${done ? 'completed' : ''}">
+      <div class="mission-icon">${m.icon}</div>
+      <h3>${m.title}</h3>
+      <p>${m.summary}</p>
+      <div class="mission-meta"><span>🧪 ${m.difficulty}</span><span>⚡ +${m.xp} XP</span></div>
+      <button class="mission-open" onclick="openMission('${m.id}')">${done ? '↻ Repetir misión' : 'Iniciar misión →'}</button>
+    </article>`;
+  }).join('');
+}
+
+function openMission(id) {
+  const mission = missions.find(m => m.id === id);
+  if (!mission) return;
+  activeMission = mission;
+  activeMissionAnswered = false;
+  document.getElementById('mission-grid').hidden = true;
+  document.querySelector('.missions-hero').hidden = true;
+  const workspace = document.getElementById('mission-workspace');
+  workspace.hidden = false;
+  const content = document.getElementById('mission-content');
+  content.innerHTML = `<div class="mission-case">
+    <div class="mission-case-header"><span class="eyebrow">🧪 MISIÓN CIENTÍFICA · ${mission.difficulty.toUpperCase()}</span><h2>${mission.icon} ${mission.title}</h2><p>Resuelve el caso con evidencia biológica.</p></div>
+    <div class="mission-scenario"><h3>🔬 Caso</h3><p>${mission.scenario}</p></div>
+    <div class="mission-decision"><h3>🧠 Toma una decisión</h3><div class="mission-choices">${mission.choices.map((c,i)=>`<button class="mission-choice" onclick="answerMission(${i})">${c.text}</button>`).join('')}</div><div class="mission-feedback" id="mission-feedback" hidden></div></div>
+  </div>`;
+  productState.missionAttempts[id] = (productState.missionAttempts[id] || 0) + 1;
+  saveProductState();
+  trackEvent('mission_started', { mission: id });
+}
+
+function answerMission(index) {
+  if (!activeMission || activeMissionAnswered) return;
+  const choice = activeMission.choices[index];
+  const buttons = document.querySelectorAll('.mission-choice');
+  buttons.forEach((b,i) => { b.disabled = true; if (i === index) b.classList.add(choice.correct ? 'correct' : 'incorrect'); if (activeMission.choices[i].correct) b.classList.add('correct'); });
+  const feedback = document.getElementById('mission-feedback');
+  feedback.hidden = false;
+  feedback.innerHTML = `${choice.correct ? '✅' : '🧭'} <strong>${choice.correct ? 'Decisión correcta.' : 'Todavía no.'}</strong> ${choice.feedback}`;
+  if (choice.correct) {
+    activeMissionAnswered = true;
+    const already = (productState.missionsCompleted || []).includes(activeMission.id);
+    if (!already) {
+      productState.missionsCompleted.push(activeMission.id);
+      awardXP(activeMission.xp, `mission_${activeMission.id}`);
+    } else {
+      awardXP(10, 'mission_replay');
+    }
+    trackEvent('mission_completed', { mission: activeMission.id });
+    setTimeout(() => renderMissions(), 0);
+    feedback.innerHTML += `<div style="margin-top:12px;font-weight:800;color:var(--primary-dark)">🏆 +${already ? 10 : activeMission.xp} XP · Misión completada</div>`;
+  } else {
+    trackEvent('mission_wrong_choice', { mission: activeMission.id });
+    buttons.forEach(b => b.disabled = false);
+  }
+}
+
+function closeMission() {
+  activeMission = null;
+  document.getElementById('mission-workspace').hidden = true;
+  document.getElementById('mission-grid').hidden = false;
+  document.querySelector('.missions-hero').hidden = false;
+  renderMissions();
+}
 
 // ============================================
 // MODE SWITCHING
@@ -783,6 +904,9 @@ function setMode(mode) {
   // Mode-specific init
   if (mode === 'quiz') {
     renderQuizQuestion();
+  }
+  if (mode === 'missions') {
+    renderMissions();
   }
 }
 

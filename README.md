@@ -233,3 +233,20 @@ Made with love for biology students around the world. 🌸
 
 Add these to your repository's "Topics" section:
 `biology`, `education`, `interactive`, `svg`, `javascript`, `cell-biology`, `organelles`, `quiz`, `learning`, `html5`, `css3`, `science`, `students`, `elearning`, `biology-education`
+
+
+## 🧪 Product features
+
+The current version includes a lightweight retention loop designed to keep BioLab free and accountless:
+
+- 🧬 Daily Challenge
+- ⚡ Persistent XP and learning streak
+- 🏆 Quiz and exploration progress
+- 🧪 Scientific Missions with decision-based cases
+- 💾 Local progress persistence with `localStorage`
+- 📊 Optional privacy-friendly GoatCounter analytics
+- 📱 Responsive interface for mobile and desktop
+
+### Product direction
+
+BioLab is evolving from an interactive reference into a small learning game: **Explore → Decide → Practice → Earn XP → Return**.
